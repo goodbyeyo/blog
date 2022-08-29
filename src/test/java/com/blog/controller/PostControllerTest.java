@@ -81,7 +81,7 @@ class PostControllerTest {
     @DisplayName("/posts 요청시 title 값은 필수")
     void test5() throws Exception{       //  application-json
         // expected
-        mockMvc.perform(post("/v4/posts")
+        mockMvc.perform(post("/v5/posts")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"title\": \"\", \"content\": \"내용입니다\"}")
                 )
@@ -90,5 +90,43 @@ class PostControllerTest {
                 .andDo(print());
     }
 
+    @Test
+    @DisplayName("/posts 요청시 title 값 필수, 공백 테스트")
+    void test6() throws Exception{       //  application-json
+        // expected
+        mockMvc.perform(post("/v6/posts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\": \"       \", \"content\": \"내용입니다\"}")
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().string("Hello World"))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("/posts 요청시 title 값 필수, 공백 테스트")
+    void test7() throws Exception{       //  application-json
+        // expected
+        mockMvc.perform(post("/v7/posts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\": \"       \", \"content\": \"내용입니다\"}")
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().string("Hello World"))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("/posts 요청시 title 값 필수, 공백 테스트")
+    void test8() throws Exception{       //  application-json
+        // expected
+        mockMvc.perform(post("/v8/posts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\": null, \"content\": \"내용입니다\"}")
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value()
+                .andDo(print());
+    }
 
 }
