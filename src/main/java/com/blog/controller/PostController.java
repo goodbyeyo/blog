@@ -1,6 +1,9 @@
 package com.blog.controller;
 
+import com.blog.domain.Post;
 import com.blog.request.PostCreate;
+import com.blog.service.PostService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -25,7 +28,33 @@ import java.util.Map;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 public class PostController {
+
+    private final PostService postService;
+
+    @PostMapping("/posts")
+    // public Post post(@RequestBody @Valid PostCreate request) {
+    // public Map post(@RequestBody @Valid PostCreate request) {
+    public void post(@RequestBody @Valid PostCreate request) {
+        // (Case1) return entity in save data
+//        return postService.write(request);
+
+        // (Case2) return primary_id in save data
+        // Long postId = postService.write(request);
+        // return Map.of("postId", postId);
+
+        // (Case3) return nothing - 클라이언트에서 모든 POST data context 관리
+        postService.write(request);
+    }
+
+    /*
+    @PostMapping("/posts")
+    public Map<String, String> post(@RequestBody @Valid PostCreate request) {
+        postService.write(request);
+        return Map.of();
+    }
+    */
 
     @PostMapping("/v1/posts")
     public String v1post(@RequestParam String title, @RequestParam String content) {
@@ -112,4 +141,10 @@ public class PostController {
     public Map<String, String> v9post(@RequestBody @Valid PostCreate params) {
         return Map.of();
     }
+
+    @PostMapping("/v10/posts")
+    public Map<String, String> v10post(@RequestBody @Valid PostCreate request) {
+        return Map.of();
+    }
+
 }
