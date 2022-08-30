@@ -23,8 +23,8 @@ import java.util.Map;
 // 4. DB에 값을 저장할 때 의도치 않은 오류가 발생할수 있다
 // 5. 서버개발자의 편안함을 위해서
 
-@RestController
 @Slf4j
+@RestController
 public class PostController {
 
     @PostMapping("/v1/posts")
@@ -73,7 +73,7 @@ public class PostController {
         return "Hello World";
     }
 
-    @PostMapping("/v7/posts")   // @Valid 체크
+    @PostMapping("/v7/posts")
     public Map<String, String> v7post(@RequestBody @Valid PostCreate params, BindingResult bindingResult ) throws Exception {
         if (bindingResult.hasErrors()) {
             List<FieldError> fieldErrors = bindingResult.getFieldErrors();
@@ -86,5 +86,30 @@ public class PostController {
             return error;
         }
         return Map.of(); // Java8 , 11 부터 지원...
+    }
+
+    @PostMapping("/v8/posts")
+    public Map<String, String> v8post(@RequestBody @Valid PostCreate params, BindingResult bindingResult ) throws Exception {
+        // 아래의 방법의 단점
+        // 1. 매번 메서드마다 값을 검증해야 한다(빠뜨리거나 반복되는 코드)
+        // 2. 응답값에 HashMap 객체를 리턴 x : 응답클래스를 만들어 주는게 좋다
+        // 3. 여러개의 에러처리가 힘들다
+        // 4. 세번 이상의 반복작업은 피하는게 좋다
+        if (bindingResult.hasErrors()) {
+            List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+            FieldError fieldError = fieldErrors.get(0);
+            String fieldName = fieldError.getField();
+            String errorMessage = fieldError.getDefaultMessage();
+
+            Map<String, String> error = new HashMap<>();
+            error.put(fieldName, errorMessage);
+            return error;
+        }
+        return Map.of(); // Java8 , 11 부터 지원...
+    }
+
+    @PostMapping("/v9/posts")
+    public Map<String, String> v9post(@RequestBody @Valid PostCreate params) {
+        return Map.of();
     }
 }

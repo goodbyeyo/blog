@@ -117,7 +117,7 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("/posts 요청시 title 값 필수, 공백 테스트")
+    @DisplayName("jsonPath 테스트")
     void test8() throws Exception{       //  application-json
         // expected
         mockMvc.perform(post("/v8/posts")
@@ -125,7 +125,22 @@ class PostControllerTest {
                         .content("{\"title\": null, \"content\": \"내용입니다\"}")
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value()
+                // junit5 jsonPath , object, array 검증방법 공부 필요...
+                .andExpect(jsonPath("$.title").value("타이틀 입력하세요"))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("/posts 요청시 title 값 필수, 공백 테스트")
+    void test9() throws Exception{
+        // expected
+        mockMvc.perform(post("/v9/posts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\": null, \"content\": \"내용입니다\"}")
+                )
+                .andExpect(status().isBadRequest())
+                // junit5 jsonPath , object, array 검증방법 공부 필요...
+                //.andExpect(jsonPath("$.title").value("타이틀 입력하세요"))
                 .andDo(print());
     }
 

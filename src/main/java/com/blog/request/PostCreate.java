@@ -12,8 +12,8 @@ import javax.validation.constraints.NotBlank;
 public class PostCreate {
 
     @NotBlank(message = "타이틀 입력하세요")
-    public String title;
+    private String title;
 
     @NotBlank(message = "컨텐츠 입력하세요")
-    public String content;
+    private String content;
 }
