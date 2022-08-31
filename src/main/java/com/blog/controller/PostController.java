@@ -2,9 +2,12 @@ package com.blog.controller;
 
 import com.blog.domain.Post;
 import com.blog.request.PostCreate;
+import com.blog.response.PostResponse;
 import com.blog.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -48,6 +51,25 @@ public class PostController {
         postService.write(request);
     }
 
+    @GetMapping("/posts/{postId}")
+    public PostResponse get(@PathVariable(name = "postId") Long id) {
+        return postService.get(id);
+    }
+
+    // 여러개의 글 조회
+//    @GetMapping("v1/posts")
+//    public List<PostResponse> getLists(@RequestParam int page) {
+//        return postService.getList(page);
+//    }
+
+    // 여러개의 글 조회
+    @GetMapping("/posts")
+    // public List<PostResponse> getList(@PageableDefault(size = 5) Pageable pageable) {
+    public List<PostResponse> getList(/*@PageableDefault*/ Pageable pageable) {
+        return postService.getList(pageable);
+    }
+
+
     /*
     @PostMapping("/posts")
     public Map<String, String> post(@RequestBody @Valid PostCreate request) {
@@ -58,6 +80,7 @@ public class PostController {
 
     @PostMapping("/v1/posts")
     public String v1post(@RequestParam String title, @RequestParam String content) {
+
         log.info("title={}, content={}", title, content);
         return "Hello World";
     }

@@ -29,6 +29,13 @@ public class Post {
         this.content = content;
     }
 
+    /*
+    // Entity 에는 서비스의 정책을 절대 넣지말것!!!
+    public String getTitle() {
+        return this.title.substring(0, 10);
+    }
+    */
+
     // public String title;
     // public String content;
 

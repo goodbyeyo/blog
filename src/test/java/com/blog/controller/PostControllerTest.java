@@ -4,6 +4,8 @@ import com.blog.domain.Post;
 import com.blog.repository.PostRepository;
 import com.blog.request.PostCreate;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,6 +20,10 @@ import org.springframework.test.web.servlet.MockMvcResultHandlersDsl;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.MediaType.*;
@@ -116,6 +122,176 @@ class PostControllerTest {
         assertEquals("내용입니다",post.getContent());
 
     }
+
+    @Test
+    @DisplayName("단건 조회")
+    void selectOneTest() throws Exception {
+        // given
+        Post post = Post.builder()
+                .title("foo11112222333344444")
+                .content("bar")
+                .build();
+        repository.save(post);
+
+        // expected(when & then)
+        mockMvc.perform(get("/posts/{postId}", post.getId())
+                                .contentType(APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(post.getId()))
+                .andExpect(jsonPath("$.title").value("foo1111222"))
+                .andExpect(jsonPath("$.content").value("bar"))
+                .andDo(print());
+    }
+
+
+
+    @Test
+    @DisplayName("다건 조회")
+    void selectListTest() throws Exception {
+        // given
+        Post post1 = Post.builder()
+                .title("title_1")
+                .content("content_1")
+                .build();
+
+        repository.save(post1);
+
+        Post post2 = Post.builder()
+                .title("title_2")
+                .content("content_2")
+                .build();
+        repository.save(post2);
+
+        // expected(when & then)
+        mockMvc.perform(get("/posts")
+                        .contentType(APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()", Matchers.is(2)))
+                .andExpect(jsonPath("$[0].id").value(post1.getId()))
+                .andExpect(jsonPath("$[0].title").value("title_1"))
+                .andExpect(jsonPath("$[0].content").value("content_1"))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("다건 조회")
+    void selectListTest1() throws Exception {
+        // given
+        Post post1 = Post.builder()
+                .title("title_1")
+                .content("content_1")
+                .build();
+
+        repository.save(post1);
+
+        Post post2 = Post.builder()
+                .title("title_2")
+                .content("content_2")
+                .build();
+        repository.save(post2);
+
+        // expected(when & then)
+        mockMvc.perform(get("/posts")
+                        .contentType(APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()", Matchers.is(2)))
+                .andExpect(jsonPath("$[0].id").value(post1.getId()))
+                .andExpect(jsonPath("$[0].title").value("title_1"))
+                .andExpect(jsonPath("$[0].content").value("content_1"))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("다건 조회 개선 1")
+    void selectListTest2() throws Exception {
+        // given
+        Post post1 = repository.save(Post.builder()
+                .title("title_1")
+                .content("content_1")
+                .build()
+        );
+
+        Post post2 = repository.save(Post.builder()
+                .title("title_2")
+                .content("content_2")
+                .build()
+        );
+
+        // expected(when & then)
+        mockMvc.perform(get("/posts")
+                        .contentType(APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()", Matchers.is(2)))
+                .andExpect(jsonPath("$[0].id").value(post1.getId()))
+                .andExpect(jsonPath("$[0].title").value("title_1"))
+                .andExpect(jsonPath("$[0].content").value("content_1"))
+                .andExpect(jsonPath("$[1].id").value(post2.getId()))
+                .andExpect(jsonPath("$[1].title").value("title_2"))
+                .andExpect(jsonPath("$[1].content").value("content_2"))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("다건 조회 개선 코드")
+    void selectListTest3() throws Exception {
+        // given
+        List<Post> postList = repository.saveAll(List.of(
+                Post.builder()
+                        .title("title_1")
+                        .content("content_1")
+                        .build(),
+                Post.builder()
+                        .title("title_2")
+                        .content("content_2")
+                        .build()
+        ));
+
+        // expected(when & then)
+        mockMvc.perform(get("/posts")
+                        .contentType(APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()", Matchers.is(2)))
+                .andExpect(jsonPath("$[0].id").value(postList.get(0).getId()))
+                .andExpect(jsonPath("$[0].title").value("title_1"))
+                .andExpect(jsonPath("$[0].content").value("content_1"))
+                .andExpect(jsonPath("$[1].id").value(postList.get(1).getId()))
+                .andExpect(jsonPath("$[1].title").value("title_2"))
+                .andExpect(jsonPath("$[1].content").value("content_2"))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("다건 조회 페이징 처리")
+    void selectListOrderByTest() throws Exception {
+        // given
+        List<Post> requestList = IntStream.range(1, 31) // for (int i = 0; i < 30; i++) {
+                .mapToObj(i-> Post.builder()
+                        .title("title " + i)
+                        .content("content " + i)
+                        .build())
+                .collect(Collectors.toList());
+        repository.saveAll(requestList);
+
+        // expected(when & then)
+         mockMvc.perform(get("/posts?page=1&sort=id,desc&size=5")
+         // mockMvc.perform(get("/posts?page=1&sort=id,desc")
+                        .contentType(APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()", Matchers.is(5)))
+                 .andExpect(jsonPath("$[0].id").value(30))
+                 .andExpect(jsonPath("$[0].title").value("title 30"))
+                 .andExpect(jsonPath("$[0].content").value("content 30"))
+                .andDo(print());
+    }
+
+
+
 
     /*
     @Test
