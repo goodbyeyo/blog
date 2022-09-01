@@ -2,6 +2,7 @@ package com.blog.controller;
 
 import com.blog.domain.Post;
 import com.blog.request.PostCreate;
+import com.blog.request.PostSearch;
 import com.blog.response.PostResponse;
 import com.blog.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -56,6 +57,12 @@ public class PostController {
         return postService.get(id);
     }
 
+
+    @GetMapping("/posts")
+    public List<PostResponse> getList(@RequestParam PostSearch postSearch) {
+        return postService.getList(postSearch);
+    }
+
     // 여러개의 글 조회
 //    @GetMapping("v1/posts")
 //    public List<PostResponse> getLists(@RequestParam int page) {
@@ -63,11 +70,12 @@ public class PostController {
 //    }
 
     // 여러개의 글 조회
-    @GetMapping("/posts")
-    // public List<PostResponse> getList(@PageableDefault(size = 5) Pageable pageable) {
-    public List<PostResponse> getList(/*@PageableDefault*/ Pageable pageable) {
-        return postService.getList(pageable);
-    }
+//    @GetMapping("/posts")
+//    // public List<PostResponse> getList(@PageableDefault(size = 5) Pageable pageable) {
+//    public List<PostResponse> getList(/*@PageableDefault*/ Pageable pageable) {
+//        return postService.getList(pageable);
+//    }
+
 
 
     /*

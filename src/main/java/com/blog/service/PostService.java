@@ -3,6 +3,7 @@ package com.blog.service;
 import com.blog.domain.Post;
 import com.blog.repository.PostRepository;
 import com.blog.request.PostCreate;
+import com.blog.request.PostSearch;
 import com.blog.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,10 +59,11 @@ public class PostService {
     }
 
 //    public List<PostResponse> getList(int page) {
-    public List<PostResponse> getList(Pageable pageable) {
+//    public List<PostResponse> getList(Pageable pageable) {
+    public List<PostResponse> getList(PostSearch postSearch) {
         // web 에서 page 1 요청 -> 0으로 변경함
 //        Pageable pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC,"id"));
-        return repository.findAll(pageable).stream()
+        return repository.getList(1).stream()
                 // 생성자 오버로딩을 통해서 축약 가능
                 .map(PostResponse::new)
                 .collect(Collectors.toList());

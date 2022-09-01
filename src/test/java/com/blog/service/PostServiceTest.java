@@ -116,7 +116,8 @@ class PostServiceTest {
 
         // then
         assertNotNull(postList);
-        assertEquals(5L, postList.size());
+        assertEquals(10L, postList.size());
+        assertEquals("title 30", postList.get(0).getTitle()); // order by desc
 //        assertEquals("title 30", postList.get(0).getTitle());
 //        assertEquals("title 26", postList.get(4).getTitle());
     }
