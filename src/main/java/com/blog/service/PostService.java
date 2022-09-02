@@ -3,6 +3,7 @@ package com.blog.service;
 import com.blog.domain.Post;
 import com.blog.repository.PostRepository;
 import com.blog.request.PostCreate;
+import com.blog.request.PostEdit;
 import com.blog.request.PostSearch;
 import com.blog.response.PostResponse;
 import lombok.RequiredArgsConstructor;
@@ -63,7 +64,7 @@ public class PostService {
     public List<PostResponse> getList(PostSearch postSearch) {
         // web 에서 page 1 요청 -> 0으로 변경함
 //        Pageable pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC,"id"));
-        return repository.getList(1).stream()
+        return repository.getList(postSearch).stream()
                 // 생성자 오버로딩을 통해서 축약 가능
                 .map(PostResponse::new)
                 .collect(Collectors.toList());
@@ -74,5 +75,11 @@ public class PostService {
 //                        .content(post.getContent())
 //                        .build())
 //                .collect(Collectors.toList());
+    }
+
+    public void edit(Long id, PostEdit postEdit) {
+        Post post = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
+
     }
 }
