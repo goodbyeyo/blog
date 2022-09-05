@@ -3,6 +3,7 @@ package com.blog.service;
 import com.blog.domain.Post;
 import com.blog.repository.PostRepository;
 import com.blog.request.PostCreate;
+import com.blog.request.PostSearch;
 import com.blog.response.PostResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -90,8 +91,12 @@ class PostServiceTest {
         repository.save(request2);
 
         // when
-        Pageable pageable = PageRequest.of(0, 5, DESC, "id");
-        List<PostResponse> postList = postService.getList(pageable);
+        // Pageable pageable = PageRequest.of(0, 5, DESC, "id");
+        PostSearch search = PostSearch.builder()
+                .page(1)
+                .size(10)
+                .build();
+        List<PostResponse> postList = postService.getList(search);
 
         // then
         assertNotNull(postList);
@@ -110,9 +115,13 @@ class PostServiceTest {
                 .collect(Collectors.toList());
         repository.saveAll(requestList);
 
-        Pageable pageable = PageRequest.of(0, 5, DESC, "id");
+        // Pageable pageable = PageRequest.of(0, 5, DESC, "id");
+        PostSearch search = PostSearch.builder()
+                .page(1)
+                .size(10)
+                .build();
         // when
-        List<PostResponse> postList = postService.getList(pageable);
+        List<PostResponse> postList = postService.getList(search);
 
         // then
         assertNotNull(postList);

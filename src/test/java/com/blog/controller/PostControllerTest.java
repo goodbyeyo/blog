@@ -278,15 +278,40 @@ class PostControllerTest {
         repository.saveAll(requestList);
 
         // expected(when & then)
-         mockMvc.perform(get("/posts?page=1&sort=id,desc&size=5")
+         mockMvc.perform(get("/posts?page=1&size=10") // sort=id,desc
          // mockMvc.perform(get("/posts?page=1&sort=id,desc")
                         .contentType(APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()", Matchers.is(5)))
+                .andExpect(jsonPath("$.length()", Matchers.is(10)))
                  .andExpect(jsonPath("$[0].id").value(30))
                  .andExpect(jsonPath("$[0].title").value("title 30"))
                  .andExpect(jsonPath("$[0].content").value("content 30"))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("페이지를 0으로 요청하면 첫페이지를 가져온다")
+    void select0pageTest() throws Exception {
+        // given
+        List<Post> requestList = IntStream.range(1, 31) // for (int i = 0; i < 30; i++) {
+                .mapToObj(i-> Post.builder()
+                        .title("title " + i)
+                        .content("content " + i)
+                        .build())
+                .collect(Collectors.toList());
+        repository.saveAll(requestList);
+
+        // expected(when & then)
+        mockMvc.perform(get("/posts?page=0&size=10") // sort=id,desc
+                        // mockMvc.perform(get("/posts?page=1&sort=id,desc")
+                        .contentType(APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()", Matchers.is(10)))
+                .andExpect(jsonPath("$[0].id").value(30))
+                .andExpect(jsonPath("$[0].title").value("title 30"))
+                .andExpect(jsonPath("$[0].content").value("content 30"))
                 .andDo(print());
     }
 
