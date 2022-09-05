@@ -7,7 +7,8 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-import static com.blog.domain.QPost.post;
+import static com.blog.domain.QPost.*;
+
 
 @RequiredArgsConstructor
 public class PostRepositoryImpl implements PostRepositoryCustom{
@@ -22,6 +23,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .offset((long) (page - 1) * 10)
                 .orderBy(post.id.desc())
                 .fetch();
+
     }
 
 }

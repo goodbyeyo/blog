@@ -30,6 +30,11 @@ import java.util.Map;
 // 4. DB에 값을 저장할 때 의도치 않은 오류가 발생할수 있다
 // 5. 서버개발자의 편안함을 위해서
 
+// spring boot restDocs
+// - 운영코드에 영향이 없다
+// - 코드 수정 -> 문서를 수정 x -> 코드(기능) -> 문서
+// - 테스트 케이스 실행 - 문서를 생성해줌ㄴ다
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
