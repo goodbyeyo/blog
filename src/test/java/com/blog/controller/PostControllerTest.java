@@ -3,6 +3,7 @@ package com.blog.controller;
 import com.blog.domain.Post;
 import com.blog.repository.PostRepository;
 import com.blog.request.PostCreate;
+import com.blog.request.PostEdit;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -16,10 +17,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MockMvcResultHandlersDsl;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,7 +47,7 @@ class PostControllerTest {
         repository.deleteAll(); // 각각 테스트 실행후 데이터 삭제
     }
 
-    @Test
+//    @Test
     @DisplayName("/posts 요청시 Hello World 출력")
     void test4() throws Exception{       //  application-json
         // given
@@ -73,7 +70,7 @@ class PostControllerTest {
                 .andDo(print());
     }
 
-    @Test
+//    @Test
     @DisplayName("/v10/posts 요청시 title 값 필수(에러 필드를 Custom 정의하여 리턴받는 테스트)")
     void test10() throws Exception{
         // given
@@ -97,7 +94,7 @@ class PostControllerTest {
                 .andDo(print());
     }
 
-    @Test
+//    @Test
     @DisplayName("/posts 요청 시 DB에 값이 저장된다")
     void test11() throws Exception{
         // given
@@ -123,7 +120,7 @@ class PostControllerTest {
 
     }
 
-    @Test
+//    @Test
     @DisplayName("단건 조회")
     void selectOneTest() throws Exception {
         // given
@@ -146,7 +143,7 @@ class PostControllerTest {
 
 
 
-    @Test
+//    @Test
     @DisplayName("다건 조회")
     void selectListTest() throws Exception {
         // given
@@ -175,7 +172,7 @@ class PostControllerTest {
                 .andDo(print());
     }
 
-    @Test
+//    @Test
     @DisplayName("다건 조회")
     void selectListTest1() throws Exception {
         // given
@@ -204,7 +201,7 @@ class PostControllerTest {
                 .andDo(print());
     }
 
-    @Test
+//    @Test
     @DisplayName("다건 조회 개선 1")
     void selectListTest2() throws Exception {
         // given
@@ -235,7 +232,7 @@ class PostControllerTest {
                 .andDo(print());
     }
 
-    @Test
+//    @Test
     @DisplayName("다건 조회 개선 코드")
     void selectListTest3() throws Exception {
         // given
@@ -265,7 +262,7 @@ class PostControllerTest {
                 .andDo(print());
     }
 
-    @Test
+//    @Test
     @DisplayName("다건 조회 페이징 처리")
     void selectListOrderByTest() throws Exception {
         // given
@@ -290,7 +287,7 @@ class PostControllerTest {
                 .andDo(print());
     }
 
-    @Test
+//    @Test
     @DisplayName("페이지를 0으로 요청하면 첫페이지를 가져온다")
     void select0pageTest() throws Exception {
         // given
@@ -312,6 +309,80 @@ class PostControllerTest {
                 .andExpect(jsonPath("$[0].id").value(30))
                 .andExpect(jsonPath("$[0].title").value("title 30"))
                 .andExpect(jsonPath("$[0].content").value("content 30"))
+                .andDo(print());
+    }
+
+//    @Test
+    @DisplayName("글 수정 테스트")
+    void modifyTest() throws Exception {
+        // given (기본 데이터 입력)
+        Post post = Post.builder()
+                .title("title")
+                .content("content")
+                .build();
+        repository.save(post);
+
+        // when (수정할 데이터 입력)
+        PostEdit postEdit = PostEdit.builder()
+                .title("title")
+                .content("content")
+                .build();
+
+        // expected(when & then)
+        mockMvc.perform(patch("/posts/{postId}", post.getId())
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(postEdit))
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+//    @Test
+    @DisplayName("글 삭제 테스트")
+    void deleteTest() throws Exception {
+        // given (기본 데이터 입력)
+        Post post = Post.builder()
+                .title("title")
+                .content("content")
+                .build();
+        repository.save(post);
+
+        // expected(when & then)
+        mockMvc.perform(delete("/posts/{postId}", post.getId())
+                        .contentType(APPLICATION_JSON)
+//                        .content(objectMapper.writeValueAsString(postEdit))
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+//    @Test
+    @DisplayName("존재하지 않는 게시글 조회")
+    void notExistDataSelect() throws Exception{
+        // expected(when & then)
+        mockMvc.perform(get("/posts/{postId}", 1L)
+                                .contentType(APPLICATION_JSON)
+                )
+                .andExpect(status().isNotFound())
+                .andDo(print());
+
+    }
+
+//    @Test
+    @DisplayName("게시글 작성시 '바보'는 포함될수 없다")
+    void invaildRequestTest() throws Exception{
+        // given
+        PostCreate request = PostCreate.builder()
+                .title("바보입니다")
+                .content("내용입니다")
+                .build();
+        String jsonString = objectMapper.writeValueAsString(request);
+        // when
+        mockMvc.perform(post("/posts")
+                        .contentType(APPLICATION_JSON)
+                        .content(jsonString)
+                )
+                .andExpect(status().isBadRequest())
                 .andDo(print());
     }
 

@@ -1,7 +1,9 @@
 package com.blog.controller;
 
 import com.blog.domain.Post;
+import com.blog.exception.InvalidRequest;
 import com.blog.request.PostCreate;
+import com.blog.request.PostEdit;
 import com.blog.request.PostSearch;
 import com.blog.response.PostResponse;
 import com.blog.service.PostService;
@@ -54,6 +56,10 @@ public class PostController {
         // return Map.of("postId", postId);
 
         // (Case3) return nothing - 클라이언트에서 모든 POST data context 관리
+//        if (request.getTitle().contains("바보")) {
+//            throw new InvalidRequest();
+//        }
+        request.validate();
         postService.write(request);
     }
 
@@ -62,11 +68,22 @@ public class PostController {
         return postService.get(id);
     }
 
-
     @GetMapping("/posts")
     public List<PostResponse> getList(@ModelAttribute PostSearch postSearch) {
         return postService.getList(postSearch);
     }
+
+    @PatchMapping("/posts/{postId}")
+    public PostResponse edit(@PathVariable Long postId, @RequestBody @Valid PostEdit request) {
+        return postService.edit(postId, request);
+    }
+
+    @DeleteMapping("/posts/{postId}")
+    public void delete(@PathVariable Long postId) {
+        postService.delete(postId);
+    }
+
+
 
     // 여러개의 글 조회
 //    @GetMapping("v1/posts")

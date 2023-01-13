@@ -1,9 +1,6 @@
 package com.blog.domain;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -11,6 +8,7 @@ import javax.persistence.*;
 //@NoArgsConstructor(access = AccessLevel.PROTECTED)  // Entity : 기본생성자 필요, PROTECTED <- 생성자 접근 불가
 @Entity
 @Getter
+@ToString
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class Post {
 
@@ -28,6 +26,25 @@ public class Post {
         this.title = title;
         this.content = content;
     }
+
+//    public void change(String title, String content) {
+//        this.title = title;
+//        this.content = content;
+//    }
+
+    public PostEditor.PostEditorBuilder toEditor() {
+        return PostEditor.builder()
+                .title(title)
+                .content(content);
+
+    }
+
+    public void edit(PostEditor postEditor) {
+        this.title = postEditor.getTitle();
+        this.content = postEditor.getContent();
+
+    }
+
 
     /*
     // Entity 에는 서비스의 정책을 절대 넣지말것!!!

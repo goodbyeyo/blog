@@ -1,5 +1,6 @@
 package com.blog.request;
 
+import com.blog.exception.InvalidRequest;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
@@ -34,6 +35,12 @@ public class PostCreate {
                 .title(title)
                 .content(this.content)
                 .build();
+    }
+
+    public void validate() {
+        if (title.contains("바보")) {
+            throw new InvalidRequest("title", "제목에 바보를 포함할수 없습니다");
+        }
     }
 
 //    public PostCreate(String title, String content) {
