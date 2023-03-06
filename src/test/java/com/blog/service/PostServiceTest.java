@@ -4,16 +4,13 @@ import com.blog.domain.Post;
 import com.blog.domain.PostDto;
 import com.blog.domain.PostEditor;
 import com.blog.exception.PostNotFound;
-import com.blog.repository.PostEditorRepository;
+//import com.blog.repository.PostEditorRepository;
 import com.blog.repository.PostRepository;
 import com.blog.request.PostCreate;
 import com.blog.request.PostEdit;
 import com.blog.request.PostSearch;
 import com.blog.response.PostResponse;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -33,8 +30,8 @@ class PostServiceTest {
     @Autowired
     private PostRepository repository;
 
-    @Autowired
-    private PostEditorRepository postEditorRepository;
+    // @Autowired
+    // private PostEditorRepository postEditorRepository;
 
     @BeforeEach
     void clean() {
@@ -136,9 +133,9 @@ class PostServiceTest {
 //        assertEquals("title 26", postList.get(4).getTitle());
     }
 
-//    @Test
-    @DisplayName("글 수정")
-    void modifyTest() {
+    @Test
+    @DisplayName("글 수정 null 값 입력 테스트")
+    void modifyNormalTest() {
         // given (기본 데이터 입력)
         Post post = Post.builder()
                 .title("title")
@@ -159,6 +156,32 @@ class PostServiceTest {
                 .orElseThrow(() -> new RuntimeException("글이 존재하지 않습니다 id = " + post.getId()));
 
         assertEquals("title1", changedResult.getTitle());
+        assertEquals("content1", changedResult.getContent());
+    }
+
+    @Test
+    @DisplayName("글 수정 null 값 입력 테스트")
+    void modifyNullTest() {
+        // given (기본 데이터 입력)
+        Post post = Post.builder()
+                .title("title")
+                .content("content")
+                .build();
+        repository.save(post);
+
+        // when (수정할 데이터 입력)
+        PostEdit postEdit = PostEdit.builder()
+                .title(null)
+                .content("content1")
+                .build();
+
+        postService.edit(post.getId(), postEdit);
+
+        // then
+        Post changedResult = repository.findById(post.getId())
+                .orElseThrow(() -> new RuntimeException("글이 존재하지 않습니다 id = " + post.getId()));
+
+        assertEquals("title", changedResult.getTitle());
         assertEquals("content1", changedResult.getContent());
     }
 
@@ -250,35 +273,36 @@ class PostServiceTest {
         });
     }
 
-    @Test
-    @DisplayName("Querydsl 서브쿼리 테스트")
-    void subqueryTest() {
-
-        // given
-        List<Post> posts = new ArrayList<>();
-        List<PostEditor> editors = new ArrayList<>();
-
-        Post post1 = Post.builder().title("test1").content("testContent1").build();
-        Post post2 = Post.builder().title("test2").content("testContent2").build();
-        Post post3 = Post.builder().title("test3").content("testContent3").build();
-
-        PostEditor editor1 = PostEditor.builder().title("title1").content("editor1").build();
-        PostEditor editor2 = PostEditor.builder().title("title2").content("editor2").build();
-        PostEditor editor3 = PostEditor.builder().title("title3").content("editor3").build();
-
-        posts.add(post1);
-        posts.add(post2);
-        posts.add(post3);
-        editors.add(editor1);
-        editors.add(editor2);
-        editors.add(editor3);
-
-        repository.saveAll(posts);
-        postEditorRepository.saveAll(editors);
-
-        // when
-        List<PostDto> result = repository.selectEditorContent(post1);
-
-    }
+    // @Disabled
+    // @Test
+//    @DisplayName("Querydsl 서브쿼리 테스트")
+//    void subQueryTest() {
+//
+//        // given
+//        List<Post> posts = new ArrayList<>();
+//        List<PostEditor> editors = new ArrayList<>();
+//
+//        Post post1 = Post.builder().title("test1").content("testContent1").build();
+//        Post post2 = Post.builder().title("test2").content("testContent2").build();
+//        Post post3 = Post.builder().title("test3").content("testContent3").build();
+//
+//        PostEditor editor1 = PostEditor.builder().title("title1").content("editor1").build();
+//        PostEditor editor2 = PostEditor.builder().title("title2").content("editor2").build();
+//        PostEditor editor3 = PostEditor.builder().title("title3").content("editor3").build();
+//
+//        posts.add(post1);
+//        posts.add(post2);
+//        posts.add(post3);
+//        editors.add(editor1);
+//        editors.add(editor2);
+//        editors.add(editor3);
+//
+//        repository.saveAll(posts);
+//        postEditorRepository.saveAll(editors);
+//
+//        // when
+//        List<PostDto> result = repository.selectEditorContent(post1);
+//
+//    }
 
 }

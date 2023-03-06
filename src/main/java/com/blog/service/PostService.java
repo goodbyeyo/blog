@@ -10,52 +10,37 @@ import com.blog.request.PostSearch;
 import com.blog.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor    //
+@RequiredArgsConstructor
 public class PostService {
-    private final PostRepository repository; // final 로 선언된 필드는 @RequiredArgsConstructor 로 생성자 생성 가능
 
+    private final PostRepository repository;
 
-    // public Post write(PostCreate postCreate) {
-    // public Long write(PostCreate postCreate) {
     public void write(PostCreate postCreate) {
-        // postCreate -> Entity 변한 필요
-        // 직접 필드 주입 : 비추천 (변경사항은 외부에 닫는 방법으로)
-        // Post post = new Post();
-        // post.title = postCreate.getTitle();
-        // post.content = postCreate.getContent();
 
-        // Post post = new Post(postCreate.getTitle(), postCreate.getContent());
         Post post = Post.builder()
                 .title(postCreate.getTitle())
                 .content(postCreate.getContent())
                 .build();
-        // return repository.save(post);
-        // return post.getId();
         repository.save(post);
     }
 
     public PostResponse get(Long id) {
-        Post post = repository.findById(id)
+        Post post = repository
+                .findById(id)
                 .orElseThrow(PostNotFound::new);
-                // .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 글입니다."));
-        PostResponse response = PostResponse.builder()
+        return PostResponse.builder()
                 .id(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
                 .build();
-        return response;
 //        Optional<Post> postOptional = repository.findById(id);
 //        if (postOptional.isPresent()) {
 //            return postOptional.get();
@@ -81,19 +66,31 @@ public class PostService {
 //                .collect(Collectors.toList());
     }
 
+
+//    public PostResponse edit(Long id, PostEdit postEdit) {
     @Transactional
-    public PostResponse edit(Long id, PostEdit postEdit) {
-        Post post = repository.findById(id)
+    public void edit(Long id, PostEdit postEdit) {
+
+        Post post = repository
+                .findById(id)
                 .orElseThrow(PostNotFound::new);
 
-        // 1 ( Builer 패턴 이용해서 전체 저장하여 저장하는 방법 )
-        PostEditor.PostEditorBuilder postEditorBuilder = post.toEditor();
-        PostEditor postEditor = postEditorBuilder
+        PostEditor.PostEditorBuilder editorBuilder = post.toEditor();
+
+        PostEditor postEditor = editorBuilder
                 .title(postEdit.getTitle())
                 .content(postEdit.getContent())
                 .build();
+
         post.edit(postEditor);
-        return new PostResponse(post);
+
+
+//        post.edit(
+//                postEdit.getTitle() != null ? postEdit.getTitle() : post.getTitle(),
+//                postEdit.getContent() != null ? postEdit.getContent() : post.getContent()
+//        );
+
+//        return new PostResponse(post);
 
         // 2 ( 변경되어 전달된 내용만 null 체크하여 저장하는 방법) - 생성자안에서 null 체크할수도 있다
 //        if (postEdit.getTitle() != null) {
