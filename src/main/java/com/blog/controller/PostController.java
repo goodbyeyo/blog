@@ -45,20 +45,7 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping("/posts")
-    // public Post post(@RequestBody @Valid PostCreate request) {
-    // public Map post(@RequestBody @Valid PostCreate request) {
     public void post(@RequestBody @Valid PostCreate request) {
-        // (Case1) return entity in save data
-//        return postService.write(request);
-
-        // (Case2) return primary_id in save data
-        // Long postId = postService.write(request);
-        // return Map.of("postId", postId);
-
-        // (Case3) return nothing - 클라이언트에서 모든 POST data context 관리
-//        if (request.getTitle().contains("바보")) {
-//            throw new InvalidRequest();
-//        }
         request.validate();
         postService.write(request);
     }
