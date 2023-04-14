@@ -21,16 +21,20 @@ const moveToRead = () => {
 </script>
 
 <template>
-  <li v-for="post in posts" :key="post.id">
-  <!-- a 태그를 사용하면 전체 태그를 불러오기때문에 리소스 낭비가 심하다 따라서 router-link 사용 -->
-  <!--  <li v-for="post in posts" :key="post.id" @click="moveToRead()"> -->
-    <div>
-      <router-link :to="{ name: 'read', params: { postId: post.id } }">
-        {{post.title}}
-      </router-link>
-    </div>
-    <div>{{post.content}}</div>
-  </li>
+  <ul>
+    <li v-for="post in posts" :key="post.id">
+    <!-- a 태그를 사용하면 전체 태그를 불러오기때문에 리소스 낭비가 심하다 따라서 router-link 사용 -->
+    <!--  <li v-for="post in posts" :key="post.id" @click="moveToRead()"> -->
+      <div>
+        <router-link :to="{ name: 'read', params: { postId: post.id } }">
+          {{post.title}}
+        </router-link>
+      </div>
+      <div>
+          {{post.content}}
+      </div>
+    </li>
+  </ul>
 </template>
 
 <style scoped>

@@ -25,11 +25,11 @@ const content = ref("");
 
 onMounted(() => {
   console.log(props.postId)
-  axios.get(`/api/posts/${props.postId}`)
-      .then((response) => {
-        post.value = response.data;
-      })
+  axios.get(`/api/posts/${props.postId}`).then((response) => {
+      post.value = response.data;
+  })
 });
+
 </script>
 
 <template>
