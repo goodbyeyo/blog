@@ -39,7 +39,7 @@ const edit = () => {
       <el-input v-model="post.content" />
     </div>
 
-    <div class="mt-2">
+    <div class="mt-2 flex justify-content-end">
       <el-button type="primary" @click="edit()"> 글 수정 완료</el-button>
     </div>
 </template>
